@@ -1,0 +1,8 @@
+include README.rst
+
+include test/*.py
+
+include pybind11/include/pybind11/*.h
+include pvfmm/include/*.hpp
+include pvfmm/include/*.txx
+include pvfmm/src/*.cpp

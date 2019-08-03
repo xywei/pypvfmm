@@ -1,0 +1,11 @@
+*zip
+*~
+*.pyc
+*.egg-info
+build
+*.so
+dist
+distribute*.tar.gz
+distribute*.egg
+
+.cache
