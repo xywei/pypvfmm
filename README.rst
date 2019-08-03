@@ -1,6 +1,8 @@
 pypvfmm: A Python Wrapper of PVFMM
 ==================================
 
+[![pipeline status](https://gitlab.tiker.net/xywei/pypvfmm/badges/master/pipeline.svg)](https://gitlab.tiker.net/xywei/pypvfmm/commits/master)
+
 pypvfmm is a **WIP** Python interface to pvfmm. 
 
 License
