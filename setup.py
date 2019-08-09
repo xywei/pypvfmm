@@ -5,6 +5,9 @@ autotools. User can also specify to build against an existing pvfmm
 installation by setting the PVFMM_DIR environment variable.
 """
 
+import subprocess
+import os
+
 
 # {{{ setup package version
 
@@ -27,24 +30,41 @@ def get_version():
 # {{{ setup bundled pvfmm
 
 def build_pvfmm():
+    src_dir = os.getcwd()
 
-    # if no pvfmm source and is in git dir, update submodules
+    print("Entering pvfmm/")
+    os.chdir(os.path.join(src_dir, 'pvfmm'))
 
-    pass
+    # if is in git dir, update submodules
+    if os.path.exists(os.path.join(src_dir, '.git')):
+        print("Updating submodules")
+        subprocess.call(["git", "submodule", "update",
+                         "--init", "--recursive"])
+
+    subprocess.call(["libtoolize"])
+    subprocess.call(["aclocal"])
+    subprocess.call(["autoconf"])
+    subprocess.call(["autoheader"])
+    subprocess.call(["automake", "--add-missing"])
+
+    subprocess.call(["./configure", "--prefix=%s/pvfmm-build" % src_dir])
+    subprocess.call(["make", "-j%d" % os.cpu_count()])
+    subprocess.call(["make", "install"])
+
+    print("Leaving pvfmm/")
+    os.chdir(src_dir)
 
 # }}} End setup bundled pvfmm
 
 
 def main():
-
-    import os
     external_pvfmm = os.environ.get("PVFMM_DIR", None)
 
     if external_pvfmm:
         print("Using external PVFMM installed at %s." % external_pvfmm)
         # parse external_pvfmm/MakeVariables
     else:
-        print("Building bundled PVFMM")
+        print("Building with bundled PVFMM")
         build_pvfmm()
         # set pvfmm parameters
 
