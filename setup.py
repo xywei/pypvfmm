@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+"""By default a bundled version of pvfmm is built, which requires
+autotools. User can also specify to build against an existing pvfmm
+installation by setting the PVFMM_DIR environment variable.
+"""
+
+
 # {{{ setup package version
 
 
@@ -18,7 +24,29 @@ def get_version():
 # }}} End setup package version
 
 
+# {{{ setup bundled pvfmm
+
+def build_pvfmm():
+
+    # if no pvfmm source and is in git dir, update submodules
+
+    pass
+
+# }}} End setup bundled pvfmm
+
+
 def main():
+
+    import os
+    external_pvfmm = os.environ.get("PVFMM_DIR", None)
+
+    if external_pvfmm:
+        print("Using external PVFMM installed at %s." % external_pvfmm)
+        # parse external_pvfmm/MakeVariables
+    else:
+        print("Building bundled PVFMM")
+        build_pvfmm()
+        # set pvfmm parameters
 
     from distutils.core import setup
 
@@ -38,7 +66,7 @@ def main():
               'Intended Audience :: Other Audience',
               'Intended Audience :: Science/Research',
               'License :: OSI Approved :: MIT License',
-              'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)'
+              'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',  # noqa: E501
               'License :: OSI Approved :: BSD License',
               'Programming Language :: C++',
               'Programming Language :: Python',

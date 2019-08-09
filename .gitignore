@@ -10,3 +10,5 @@ distribute*.tar.gz
 distribute*.egg
 
 .cache
+pvfmm-build
+build
