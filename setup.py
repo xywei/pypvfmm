@@ -8,6 +8,8 @@ installation by setting the PVFMM_DIR environment variable.
 import subprocess
 import os
 
+PYPVFMM_SRC_DIR = os.getcwd()
+
 
 # {{{ setup package version
 
@@ -30,16 +32,16 @@ def get_version():
 # {{{ setup bundled pvfmm
 
 def build_pvfmm():
-    src_dir = os.getcwd()
-
-    print("Entering pvfmm/")
-    os.chdir(os.path.join(src_dir, 'pvfmm'))
-
+    """Build the bundled pvfmm.
+    """
     # if is in git dir, update submodules
-    if os.path.exists(os.path.join(src_dir, '.git')):
+    if os.path.exists(os.path.join(PYPVFMM_SRC_DIR, '.git')):
         print("Updating submodules")
         subprocess.call(["git", "submodule", "update",
                          "--init", "--recursive"])
+
+    print("Entering pvfmm/")
+    os.chdir(os.path.join(PYPVFMM_SRC_DIR, 'pvfmm'))
 
     subprocess.call(["libtoolize"])
     subprocess.call(["aclocal"])
@@ -47,12 +49,13 @@ def build_pvfmm():
     subprocess.call(["autoheader"])
     subprocess.call(["automake", "--add-missing"])
 
-    subprocess.call(["./configure", "--prefix=%s/pvfmm-build" % src_dir])
+    subprocess.call(["./configure",
+                     "--prefix=%s/pvfmm-build" % PYPVFMM_SRC_DIR])
     subprocess.call(["make", "-j%d" % os.cpu_count()])
     subprocess.call(["make", "install"])
 
     print("Leaving pvfmm/")
-    os.chdir(src_dir)
+    os.chdir(PYPVFMM_SRC_DIR)
 
 # }}} End setup bundled pvfmm
 
