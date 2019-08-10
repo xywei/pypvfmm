@@ -63,7 +63,7 @@ def build_pvfmm():
     # if is in git dir, update submodules
     if os.path.exists(os.path.join(PYPVFMM_SRC_DIR, '.git')):
         print("Updating submodules")
-        subprocess.call(["git", "submodule", "update",
+        subprocess.check_call(["git", "submodule", "update",
                          "--init", "--recursive"])
 
     print("Entering pvfmm/")
@@ -72,18 +72,18 @@ def build_pvfmm():
     if os.path.isfile(os.path.join(os.getcwd(), 'Makefile')):
         print("Using existing Makefile for PVFMM")
     else:
-        subprocess.call(["libtoolize"])
-        subprocess.call(["aclocal"])
-        subprocess.call(["autoconf"])
-        subprocess.call(["autoheader"])
-        subprocess.call(["automake", "--add-missing"])
+        subprocess.check_call(["libtoolize"])
+        subprocess.check_call(["aclocal"])
+        subprocess.check_call(["autoconf"])
+        subprocess.check_call(["autoheader"])
+        subprocess.check_call(["automake", "--add-missing"])
 
-        subprocess.call(["./configure",
+        subprocess.check_call(["./configure",
                          "--prefix=%s/pvfmm-build" % PYPVFMM_SRC_DIR,
                          "--disable-doxygen-dot"])
 
-    subprocess.call(["make", "-j%d" % os.cpu_count()])
-    subprocess.call(["make", "install"])
+    subprocess.check_call(["make", "-j%d" % os.cpu_count()])
+    subprocess.check_call(["make", "install"])
 
     print("Leaving pvfmm/")
     os.chdir(PYPVFMM_SRC_DIR)
