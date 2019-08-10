@@ -15,5 +15,6 @@ Python 3:
     - ". ./build-and-test-py-project.sh"
   tags:
     - python3
+    - latex
   except:
     - tags
