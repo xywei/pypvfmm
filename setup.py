@@ -54,6 +54,12 @@ def get_version():
 def build_pvfmm():
     """Build the bundled pvfmm.
     """
+    # skip if the install dir exists
+    if os.path.exists(os.path.join(PYPVFMM_SRC_DIR, 'pvfmm-build')):
+        print("Skipping due to existing builds.")
+        print("  (To rebuild, remove pvfmm-build/ and re-run the script.)")
+        return
+
     # if is in git dir, update submodules
     if os.path.exists(os.path.join(PYPVFMM_SRC_DIR, '.git')):
         print("Updating submodules")
@@ -63,14 +69,19 @@ def build_pvfmm():
     print("Entering pvfmm/")
     os.chdir(os.path.join(PYPVFMM_SRC_DIR, 'pvfmm'))
 
-    subprocess.call(["libtoolize"])
-    subprocess.call(["aclocal"])
-    subprocess.call(["autoconf"])
-    subprocess.call(["autoheader"])
-    subprocess.call(["automake", "--add-missing"])
+    if os.path.isfile(os.path.join(os.getcwd(), 'Makefile')):
+        print("Using existing Makefile for PVFMM")
+    else:
+        subprocess.call(["libtoolize"])
+        subprocess.call(["aclocal"])
+        subprocess.call(["autoconf"])
+        subprocess.call(["autoheader"])
+        subprocess.call(["automake", "--add-missing"])
 
-    subprocess.call(["./configure",
-                     "--prefix=%s/pvfmm-build" % PYPVFMM_SRC_DIR])
+        subprocess.call(["./configure",
+                         "--prefix=%s/pvfmm-build" % PYPVFMM_SRC_DIR,
+                         "--disable-doxygen-dot"])
+
     subprocess.call(["make", "-j%d" % os.cpu_count()])
     subprocess.call(["make", "install"])
 
