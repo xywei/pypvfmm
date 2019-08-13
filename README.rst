@@ -6,6 +6,16 @@ pypvfmm: A Python Wrapper of PVFMM
 
 pypvfmm is a **WIP** Python interface to pvfmm. 
 
+Conda
+-----
+
+To use `pypvfmm` inside a `conda` environment, install the following dependencies
+from `conda-forge`:
+
+- `openmp`
+- `mpi4py`
+- `fftw`
+
 License
 -------
 

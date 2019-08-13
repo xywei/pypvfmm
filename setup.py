@@ -310,7 +310,7 @@ class BuildExt(build_ext):
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
         for ext in self.extensions:
             ext.extra_compile_args = MPI_COMPILE_ARGS + PVFMM_COMPILE_ARGS + opts
-            ext.extra_link_args = MPI_LINK_ARGS + PVFMM_LINK_ARGS + PVFMM_COMPILE_ARGS + link_opts
+            ext.extra_link_args = PVFMM_LINK_ARGS + PVFMM_COMPILE_ARGS + link_opts + MPI_LINK_ARGS
         build_ext.build_extensions(self)
 
 # }}} End setup CXX compiler
