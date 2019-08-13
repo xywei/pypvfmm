@@ -85,9 +85,11 @@ def build_pvfmm():
         subprocess.check_call(["autoheader"])
         subprocess.check_call(["automake", "--add-missing"])
 
-        subprocess.check_call(["CXXFLAGS=-fPIC ./configure",
+        env_plus = os.environ.copy()
+        env_plus['CXXFLAGS'] = '-fPIC'
+        subprocess.check_call(["./configure",
                                "--prefix=%s/pvfmm-build" % PYPVFMM_SRC_DIR,
-                               "--disable-doxygen-dot"])
+                               "--disable-doxygen-dot"], env=env_plus)
 
     subprocess.check_call(["make", "-j%d" % os.cpu_count()])
     subprocess.check_call(["make", "install"])
@@ -283,7 +285,7 @@ class BuildExt(build_ext):
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
         for ext in self.extensions:
             ext.extra_compile_args = opts + MPI_COMPILE_ARGS
-            ext.extra_link_args = MPI_LINK_ARGS + PVFMM_LINK_ARGS + link_opts
+            ext.extra_link_args = MPI_LINK_ARGS + PVFMM_LINK_ARGS + link_opts + ['-fopenmp']
         build_ext.build_extensions(self)
 
 # }}} End setup CXX compiler
