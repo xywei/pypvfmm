@@ -85,9 +85,11 @@ def build_pvfmm():
         subprocess.check_call(["autoheader"])
         subprocess.check_call(["automake", "--add-missing"])
 
-        subprocess.check_call(["CXXFLAGS=-fPIC ./configure",
+        env_plus = os.environ.copy()
+        env_plus['CXXFLAGS'] = '-fPIC'
+        subprocess.check_call(["./configure",
                                "--prefix=%s/pvfmm-build" % PYPVFMM_SRC_DIR,
-                               "--disable-doxygen-dot"])
+                               "--disable-doxygen-dot"], env=env_plus)
 
     subprocess.check_call(["make", "-j%d" % os.cpu_count()])
     subprocess.check_call(["make", "install"])
