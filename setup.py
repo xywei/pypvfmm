@@ -200,10 +200,29 @@ print("Found pvfmm include dirs:")
 print("  %s" % PVFMM_INCLUDE_DIR)
 
 # empty flags will causes g++ errors
-PVFMM_LINK_ARGS = list(filter(lambda x: x != '', PVFMM_LINK_ARGS))
+def purge_empty_flags(flags):
+    return list(filter(lambda x: x != '', flags))
 
-MPI_COMPILE_ARGS = os.popen("mpic++ --showme:compile").read().strip().split(' ')
-MPI_LINK_ARGS = os.popen("mpic++ --showme:link").read().strip().split(' ')
+MPICXX_FLAGS = os.popen("mpic++ -show").read().strip().split(' ')
+MPICXX_FLAGS = purge_empty_flags(MPICXX_FLAGS[1:])
+
+if 1:
+    # use the output of `mpicc -show` instead for mpich compatibility
+    MPI_COMPILE_ARGS = MPICXX_FLAGS
+    MPI_LINK_ARGS = MPICXX_FLAGS
+else:
+    MPI_COMPILE_ARGS = os.popen("mpic++ --showme:compile").read().strip().split(' ')
+    MPI_LINK_ARGS = os.popen("mpic++ --showme:link").read().strip().split(' ')
+
+PVFMM_COMPILE_ARGS = purge_empty_flags(PVFMM_COMPILE_ARGS)
+PVFMM_LINK_ARGS = purge_empty_flags(PVFMM_LINK_ARGS)
+MPI_COMPILE_ARGS = purge_empty_flags(MPI_COMPILE_ARGS)
+MPI_LINK_ARGS = purge_empty_flags(MPI_LINK_ARGS)
+
+print(PVFMM_COMPILE_ARGS)
+print(PVFMM_LINK_ARGS)
+print(MPI_COMPILE_ARGS)
+print(MPI_LINK_ARGS)
 
 # }}} End setup pvfmm include and linker flags
 
@@ -291,7 +310,7 @@ class BuildExt(build_ext):
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
         for ext in self.extensions:
             ext.extra_compile_args = MPI_COMPILE_ARGS + PVFMM_COMPILE_ARGS + opts
-            ext.extra_link_args = MPI_LINK_ARGS + PVFMM_LINK_ARGS + link_opts
+            ext.extra_link_args = MPI_LINK_ARGS + PVFMM_LINK_ARGS + PVFMM_COMPILE_ARGS + link_opts
         build_ext.build_extensions(self)
 
 # }}} End setup CXX compiler
