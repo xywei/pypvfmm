@@ -191,6 +191,9 @@ INCL_PATTERN = re.compile('-I.*')
 PVFMM_INCLUDE_DIR = [val[2:] for val in
                      filter(INCL_PATTERN.search, PVFMM_COMPILE_ARGS)]
 
+# empty flags will causes g++ errors
+PVFMM_LINK_ARGS = list(filter(lambda x: x != '', PVFMM_LINK_ARGS))
+
 MPI_COMPILE_ARGS = os.popen("mpic++ --showme:compile").read().strip().split(' ')
 MPI_LINK_ARGS = os.popen("mpic++ --showme:link").read().strip().split(' ')
 
