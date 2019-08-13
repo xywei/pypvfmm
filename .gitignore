@@ -12,3 +12,4 @@ distribute*.egg
 .cache
 pvfmm-build
 build
+tmp

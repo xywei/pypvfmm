@@ -11,8 +11,6 @@ License
 
 `pvfmm` is licensed under the LGPL-3.0 license.
 
-`pybind11` is licensed under its BSD-style license.
-
 This wrapper is licensed under the MIT license, as below.
 
 Copyright (C) 2019 Xiaoyu Wei
