@@ -10,7 +10,7 @@ Flake8:
 Python 3:
   script:
     - py_version=3
-    - EXTRA_INSTALL="numpy mako"
+    - EXTRA_INSTALL="numpy mako pybind11"
     - curl -L -O -k https://gitlab.tiker.net/inducer/ci-support/raw/master/build-and-test-py-project.sh
     - ". ./build-and-test-py-project.sh"
   tags:
