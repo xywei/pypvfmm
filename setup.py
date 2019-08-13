@@ -193,6 +193,9 @@ INCL_PATTERN = re.compile('-I.*')
 PVFMM_INCLUDE_DIR = [val[2:] for val in
                      filter(INCL_PATTERN.search, PVFMM_COMPILE_ARGS)]
 
+print("Found pvfmm include dirs:")
+print("  %s" % PVFMM_INCLUDE_DIR)
+
 # empty flags will causes g++ errors
 PVFMM_LINK_ARGS = list(filter(lambda x: x != '', PVFMM_LINK_ARGS))
 
@@ -290,6 +293,10 @@ class BuildExt(build_ext):
 
 # }}} End setup CXX compiler
 
+
+print("Found pybind11 include dirs:")
+print("  %s" % get_pybind_include())
+print("  %s" % get_pybind_include(user=True))
 
 EXT_MODULES = [
     Extension(
