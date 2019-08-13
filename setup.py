@@ -354,7 +354,7 @@ print("  %s" % get_pybind_include(user=True))
 
 EXT_MODULES = [
     Extension(
-        'pypvfmm',
+        'pypvfmm.wrapper',
         language='c++',
         sources=['src/pypvfmm.cpp'],
         include_dirs=[

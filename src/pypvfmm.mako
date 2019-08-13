@@ -9,7 +9,7 @@ namespace py = pybind11;
 
 ${template_instantiations}
 
-PYBIND11_MODULE(pypvfmm, m) {
+PYBIND11_MODULE(wrapper, m) {
 
   py::class_<pvfmm::PrecompMat<double>>(m, "PrecompMat")
     .def(py::init<bool>(), py::arg("scale_invar"));
