@@ -30,6 +30,7 @@ import subprocess
 import os
 import sys
 import re
+from itertools import filterfalse
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import setuptools
@@ -189,9 +190,11 @@ PVFMM_MAKEVARS = flatten_makevars(parse_makevars(PVFMM_CONFIG))
 PVFMM_COMPILE_ARGS = PVFMM_MAKEVARS['CXXFLAGS_PVFMM'].strip().split(' ')
 PVFMM_LINK_ARGS = PVFMM_MAKEVARS['LDLIBS_PVFMM'].strip().split(' ')
 
+# split include dirs and extra compiler args
 INCL_PATTERN = re.compile('-I.*')
 PVFMM_INCLUDE_DIR = [val[2:] for val in
                      filter(INCL_PATTERN.search, PVFMM_COMPILE_ARGS)]
+PVFMM_COMPILE_ARGS = list(filterfalse(INCL_PATTERN.search, PVFMM_COMPILE_ARGS))
 
 print("Found pvfmm include dirs:")
 print("  %s" % PVFMM_INCLUDE_DIR)
@@ -287,11 +290,43 @@ class BuildExt(build_ext):
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
         for ext in self.extensions:
-            ext.extra_compile_args = opts + MPI_COMPILE_ARGS
-            ext.extra_link_args = MPI_LINK_ARGS + PVFMM_LINK_ARGS + link_opts + ['-fopenmp']
+            ext.extra_compile_args = MPI_COMPILE_ARGS + PVFMM_COMPILE_ARGS + opts
+            ext.extra_link_args = MPI_LINK_ARGS + PVFMM_LINK_ARGS + link_opts
         build_ext.build_extensions(self)
 
 # }}} End setup CXX compiler
+
+
+# {{{ wrapper generation
+
+def generate_wrappers():
+    """Generates pypvfmm.cpp
+    """
+    from mako.template import Template
+    from codegen_helpers import CXXHeaders, TemplateClassInst
+
+    base_name = "pypvfmm"
+    mako_name = base_name + ".mako"
+    tmpl = Template(open(os.path.join('src', mako_name), "rt").read(),
+                    uri=mako_name, strict_undefined=True)
+
+    pybind11_headers = CXXHeaders(["pybind11/pybind11.h", "pybind11/numpy.h"])
+    pvfmm_headers = CXXHeaders(["precomp_mat.hpp"])
+
+    context = dict(
+        pybind11_headers=pybind11_headers,
+        pvfmm_headers=pvfmm_headers,
+        template_instantiations="",
+        )
+    result = tmpl.render(**context)
+
+    wrapper_name = base_name + ".cpp"
+    open(os.path.join('src', wrapper_name), "wt").write(result)
+
+
+generate_wrappers()
+
+# }}}
 
 
 print("Found pybind11 include dirs:")

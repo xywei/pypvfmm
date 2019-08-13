@@ -20,6 +20,57 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+from mako.template import Template
+
+PVFMM_HEADERS = [
+        "precomp_mat.hpp"
+        ]
+
+
+def to_txt(lines):
+    """Join lines into a single piece, with newline at
+    the end of each line.
+    """
+    return '\n'.join(lines) + '\n'
+
+
+def to_cpp(lines):
+    """Join lines into a single piece, with semicolon and
+    newline at the end of each line.
+    """
+    return ';\n'.join(lines) + ';\n'
+
+
+class CXXHeaders():
+    """Collection of C++ header files.
+    """
+    incl_template = Template("#include <${hfile}>")
+
+    def __init__(self, hfiles):
+        self.header_files = hfiles
+
+    def __str__(self):
+        return to_txt([
+            self.incl_template.render(hfile=hfile)
+            for hfile in self.header_files])
+
+
+class TemplateClassInst():
+    """Instantiation of a C++ template class.
+    """
+    inst_template = Template("template class ${class_id}<${template_args}>()")
+
+    def __init__(self, class_id, template_args):
+        self.class_id = class_id
+        self.template_args= template_args
+
+    def __str__(self):
+        return self.inst_template.render(
+            class_id=self.class_id,
+            template_args=', '.join(self.template_args),
+            )
+
+
 # TODO: find instantiations from src/ and generate wrappers.
 
 # TODO: instantiate internal template stuff and generate wrappers.

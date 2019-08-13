@@ -2,13 +2,12 @@
 #include <omp.h>
 #include <iostream>
 
-#include <precomp_mat.hpp>
+${pvfmm_headers}
+${pybind11_headers}
 
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
 namespace py = pybind11;
 
-template class pvfmm::PrecompMat<double>;
+${template_instantiations}
 
 PYBIND11_MODULE(pypvfmm, m) {
 
@@ -16,3 +15,5 @@ PYBIND11_MODULE(pypvfmm, m) {
     .def(py::init<bool>(), py::arg("scale_invar"));
 
 }
+
+// vim: ft=cpp
