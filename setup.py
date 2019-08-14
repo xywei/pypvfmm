@@ -353,7 +353,7 @@ def generate_wrappers():
                     uri=mako_name, strict_undefined=True)
 
     pybind11_headers = CXXHeaders(["pybind11/pybind11.h", "pybind11/numpy.h"])
-    pvfmm_headers = CXXHeaders(["precomp_mat.hpp"])
+    pvfmm_headers = CXXHeaders(["pvfmm.hpp"])
 
     insts = [
         str(TemplateClassInst("pvfmm::PrecompMat", ["double"])),
