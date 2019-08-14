@@ -1,7 +1,7 @@
 Flake8:
   script:
     - curl -L -O -k https://gitlab.tiker.net/inducer/ci-support/raw/master/prepare-and-run-flake8.sh
-    - ". ./prepare-and-run-flake8.sh pypvfmm test"
+    - ". ./prepare-and-run-flake8.sh pypvfmm test setup.py codegen_helpers.py"
   tags:
     - python3
   except:
