@@ -19,5 +19,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
+from codegen_helpers import TemplateClassInst, CXXClass
 
-from pypvfmm.version import VERSION_TEXT as __version__  # noqa
+PVFMM_HEADERS = ["pvfmm.hpp", ]
+PYBIND11_HEADERS = ["pybind11/pybind11.h", "pybind11/numpy.h"]
+
+PVFMM_SUBMODULES = ["precomp_mat", "profile"]
+
+# Try out on one class
+class_precomp_mat_pre = TemplateClassInst("PrecompMat", ["double", ])
+class_precomp_mat = CXXClass(class_precomp_mat_pre.get_class_id(),
+                             class_precomp_mat_pre.tplt_class_id + 'D',
+                             in_module="precomp_mat")
+class_precomp_mat.add_member_func(is_constructor=True,
+                                  docstring="Constructor.",
+                                  arg_names=["scale_invar"],
+                                  arg_types=["bool"],
+                                  arg_default_vals={"scale_invar": True}
+                                  )
+
+print(class_precomp_mat)

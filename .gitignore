@@ -16,3 +16,4 @@ build
 tmp
 
 src/pypvfmm.cpp
+pypvfmm/__init__.py

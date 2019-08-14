@@ -345,6 +345,7 @@ def generate_wrappers():
     """Generates pypvfmm.cpp
     """
     from mako.template import Template
+    from codegen_configs import PVFMM_HEADERS, PYBIND11_HEADERS
     from codegen_helpers import CXXHeaders, TemplateClassInst, to_cpp
 
     base_name = "pypvfmm"
@@ -352,8 +353,8 @@ def generate_wrappers():
     tmpl = Template(open(os.path.join('src', mako_name), "rt").read(),
                     uri=mako_name, strict_undefined=True)
 
-    pybind11_headers = CXXHeaders(["pybind11/pybind11.h", "pybind11/numpy.h"])
-    pvfmm_headers = CXXHeaders(["pvfmm.hpp"])
+    pybind11_headers = CXXHeaders(PYBIND11_HEADERS)
+    pvfmm_headers = CXXHeaders(PVFMM_HEADERS)
 
     insts = [
         str(TemplateClassInst("pvfmm::PrecompMat", ["double"])),
@@ -369,6 +370,32 @@ def generate_wrappers():
 
     wrapper_name = base_name + ".cpp"
     open(os.path.join('src', wrapper_name), "wt").write(result)
+
+
+def generate_init_script():
+    """Generates __init__.py
+    """
+    from mako.template import Template
+    from codegen_configs import PVFMM_SUBMODULES
+
+    base_name = "__init__"
+    mako_name = base_name + ".mako"
+    tmpl = Template(open(os.path.join('src', mako_name), "rt").read(),
+                    uri=mako_name, strict_undefined=True)
+
+    imports = ["from pypvfmm.wrapper import %s\n" % submodule
+               for submodule in PVFMM_SUBMODULES]
+
+    context = dict(
+        import_wrapper_submodules="".join(imports),
+        wrapper_submodules=",\n        ".join(
+            ['"%s"' % submodule for submodule in PVFMM_SUBMODULES]
+            ),
+        )
+    result = tmpl.render(**context)
+
+    script_name = base_name + ".py"
+    open(os.path.join('pypvfmm', script_name), "wt").write(result)
 
 
 # }}}
@@ -446,6 +473,7 @@ class BuildPy(build_py):
             raise FileNotFoundError("Cannot locate MakeVariables at %s. "
                                     "Please check whether PVFMM_DIR "
                                     "is set up correctly." % PVFMM_DIR)
+        generate_init_script()
         generate_wrappers()
         setuptools.command.build_py.build_py.run(self)
 

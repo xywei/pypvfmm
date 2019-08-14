@@ -22,10 +22,6 @@ THE SOFTWARE.
 
 from mako.template import Template
 
-PVFMM_HEADERS = [
-        "precomp_mat.hpp"
-        ]
-
 
 def to_txt(lines):
     """Join lines into a single piece, with newline at
@@ -83,40 +79,125 @@ class TemplateClassInst():
             )
 
 
-class CXXClass():
-    """C++ Class.
+class CXXClassMemberBase():
+    """C++ class members.
+    """
 
-    class_id: class identifier (w/t template arguments), e.g. std::vector<double>.
-    class_name: Python class name, e.g. StdVector.
-    mod_var: variable for module construction in pybind11.
-    member_name: name of class member functions.
+
+class CXXClassMemberFunc(CXXClassMemberBase):
+    """Member function of a C++ class.
+    """
+    normal_template = Template(
+        '.def("${name}", &${class_id}::${name}, "${docstring}", ${kwargs})')
+
+    static_template = Template(
+        '.def_static("${name}", &${class_id}::${name}, "${docstring}", ${kwargs})')
+
+    constructor_template = Template(
+        '.def(pybind11::init<${arg_types}>(), "${docstring}", ${kwargs})')
+
+    def __init__(self, name=None, arg_names=None, arg_types=None,
+                 arg_default_vals=None,
+                 docstring=None, is_static=False, is_constructor=False):
+        if name is None:
+            assert is_constructor
+            self.name = ""
+        else:
+            self.name = name
+
+        if arg_names:
+            self.arg_names = arg_names
+        else:
+            self.arg_names = []
+
+        if arg_types:
+            self.arg_types = arg_types
+        else:
+            self.arg_types = []
+
+        if arg_default_vals:
+            self.arg_default_vals = arg_default_vals
+        else:
+            self.arg_default_vals = dict()
+
+        if docstring:
+            self.docstring = docstring
+        else:
+            self.docstring = ""
+
+        self.is_static = is_static
+        self.is_constructor = is_constructor
+
+        # static constructor should not be a thing
+        assert not (is_constructor and is_static)
+
+    def generate_kwargs_code(self):
+        """Example output: pybind11::arg("n") = 3
+        """
+        code_segs = []
+        for arg in self.arg_names:
+            seg = 'pybind11::arg("%s")' % arg
+            if arg in self.arg_default_vals:
+                seg = seg + (' = %s' % self.arg_default_vals[arg])
+            code_segs.append(seg)
+        return ', '.join(code_segs)
+
+    def __str__(self):
+        context = {
+            "name": self.name,
+            "docstring": self.docstring,
+            "kwargs": self.generate_kwargs_code(),
+            "arg_types": ", ".join(self.arg_types),
+            }
+        if self.is_static:
+            return self.static_template.render(**context)
+        if self.is_constructor:
+            return self.constructor_template.render(**context)
+
+        return self.normal_template.render(**context)
+
+
+class CXXClass():
+    """C++ class.
+
+    class_id:      C++ class identifier (w/t template arguments),
+                   e.g. std::vector<double>.
+    class_name:    Python class name, e.g. StdVector.
+    class_members: information about members.
     """
     class_template = Template(
         'pybind11::class_<${class_id}>(${mod_var}, "${class_name}")${members};')
 
-    member_template = Template(
-        '\n.def("${member_name}", &${class_id}::${member_name}, '
-        '"${member_docstring}", ${func_arg_names}')
-
-    arg_name_template = Template(
-        'pybind11::arg("${arg_name}")')
-
     def __init__(self, class_id, class_name,
-                 member_func_names, member_docs, member_arg_names,
-                 mod_var='m'):
+                 in_module='m', class_members=None):
         self.class_id = class_id
         self.class_name = class_name
-        self.mod_var = mod_var
+        self.in_module = in_module
 
-        assert isinstance(member_func_names, list)
-        for mfunc in member_func_names:
-            assert isinstance(mfunc, str)
-        self.member_func_names = member_func_names
+        if class_members is None:
+            self.class_members = []
+        else:
+            assert isinstance(class_members, list)
+            for member in class_members:
+                assert isinstance(member, CXXClassMemberBase)
+            self.class_members = class_members
 
-        assert isinstance(member_docs, dict)
-        self.member_docs = member_docs
-        assert isinstance(member_arg_names, dict)
-        self.member_arg_names = member_arg_names
+    def add_member_func(self, *args, **kwargs):
+        """Add a member function to the class.
+        """
+        self.class_members.append(CXXClassMemberFunc(*args, **kwargs))
+
+    def __str__(self):
+        context = {
+            "class_id": self.class_id,
+            "class_name": self.class_name,
+            "mod_var": self.in_module,
+            "members": '\n    ' + '\n    '.join(
+                [Template(str(member)).render(class_id=self.class_id)
+                 for member in self.class_members]),
+            }
+        return self.class_template.render(**context)
+
 
 # TODO: find instantiations from src/ and generate wrappers.
 
