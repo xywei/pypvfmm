@@ -33,3 +33,4 @@ def test_wrapper_import():
     sofile = pypvfmm.wrapper.__file__
     assert isinstance(sofile, str)
     assert os.path.isfile(sofile)
+    assert sofile[-3:] == '.so'
