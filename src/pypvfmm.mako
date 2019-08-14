@@ -5,16 +5,14 @@
 ${pvfmm_headers}
 ${pybind11_headers}
 
-namespace py = pybind11;
-
 ${template_instantiations}
 
 PYBIND11_MODULE(wrapper, m) {
 
   m.doc() = "${wrapper_doc}";
 
-  py::class_<pvfmm::PrecompMat<double>>(m, "PrecompMat")
-    .def(py::init<bool>(), py::arg("scale_invar"));
+  pybind11::class_<pvfmm::PrecompMat<double>>(m, "PrecompMat")
+    .def(pybind11::init<bool>(), pybind11::arg("scale_invar"));
 
 }
 

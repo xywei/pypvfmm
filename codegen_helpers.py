@@ -57,19 +57,66 @@ class CXXHeaders():
 
 class TemplateClassInst():
     """Instantiation of a C++ template class.
-    """
-    inst_template = Template("template class ${class_id}<${template_args}>")
 
-    def __init__(self, class_id, template_args):
-        self.class_id = class_id
+    tplt_class_id: class identifier (without template args), e.g. std::vector.
+    """
+    inst_template = Template("template class ${tplt_class_id}<${template_args}>")
+
+    class_id_template = Template("${tplt_class_id}<${template_args}>")
+
+    def __init__(self, tplt_class_id, template_args):
+        self.tplt_class_id = tplt_class_id
         self.template_args = template_args
 
     def __str__(self):
         return self.inst_template.render(
-            class_id=self.class_id,
+            tplt_class_id=self.tplt_class_id,
             template_args=', '.join(self.template_args),
             )
 
+    def get_class_id(self):
+        """Returns class id that can be used to construct CXXClass objects.
+        """
+        return self.class_id_template.render(
+            tplt_class_id=self.tplt_class_id,
+            template_args=', '.join(self.template_args),
+            )
+
+
+class CXXClass():
+    """C++ Class.
+
+    class_id: class identifier (w/t template arguments), e.g. std::vector<double>.
+    class_name: Python class name, e.g. StdVector.
+    mod_var: variable for module construction in pybind11.
+    member_name: name of class member functions.
+    """
+    class_template = Template(
+        'pybind11::class_<${class_id}>(${mod_var}, "${class_name}")${members};')
+
+    member_template = Template(
+        '\n.def("${member_name}", &${class_id}::${member_name}, '
+        '"${member_docstring}", ${func_arg_names}')
+
+    arg_name_template = Template(
+        'pybind11::arg("${arg_name}")')
+
+    def __init__(self, class_id, class_name,
+                 member_func_names, member_docs, member_arg_names,
+                 mod_var='m'):
+        self.class_id = class_id
+        self.class_name = class_name
+        self.mod_var = mod_var
+
+        assert isinstance(member_func_names, list)
+        for mfunc in member_func_names:
+            assert isinstance(mfunc, str)
+        self.member_func_names = member_func_names
+
+        assert isinstance(member_docs, dict)
+        self.member_docs = member_docs
+        assert isinstance(member_arg_names, dict)
+        self.member_arg_names = member_arg_names
 
 # TODO: find instantiations from src/ and generate wrappers.
 
