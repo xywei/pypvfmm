@@ -20,7 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+import os
+
 
 def test_version():
     import pypvfmm
     assert isinstance(pypvfmm.__version__, str)
+
+def test_wrapper_import():
+    import pypvfmm.wrapper
+    sofile = pypvfmm.wrapper.__file__
+    assert isinstance(sofile, str)
+    assert os.path.isfile(sofile)
