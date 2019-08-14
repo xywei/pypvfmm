@@ -11,6 +11,8 @@ ${template_instantiations}
 
 PYBIND11_MODULE(wrapper, m) {
 
+  m.doc() = "${wrapper_doc}";
+
   py::class_<pvfmm::PrecompMat<double>>(m, "PrecompMat")
     .def(py::init<bool>(), py::arg("scale_invar"));
 

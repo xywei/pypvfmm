@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-"""Setup script.
-   Partially based on https://github.com/pybind/python_example.
-"""
+"""A Python wrapper for PvFMM."""
 
 __copyright__ = "Copyright (C) 2019 Xiaoyu Wei"
 
@@ -365,6 +363,7 @@ def generate_wrappers():
         pybind11_headers=pybind11_headers,
         pvfmm_headers=pvfmm_headers,
         template_instantiations=to_cpp(insts),
+        wrapper_doc=__doc__,
         )
     result = tmpl.render(**context)
 
