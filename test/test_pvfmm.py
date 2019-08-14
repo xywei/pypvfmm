@@ -27,6 +27,7 @@ def test_version():
     import pypvfmm
     assert isinstance(pypvfmm.__version__, str)
 
+
 def test_wrapper_import():
     import pypvfmm.wrapper
     sofile = pypvfmm.wrapper.__file__
