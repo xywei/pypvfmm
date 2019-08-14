@@ -18,7 +18,7 @@ from `conda-forge`:
 - `numpy` (which also installs `BLAS` as its dependency).
 - `pybind11`
 - `openmp`
-- `mpi4py`
+- `mpi4py` (which also installs `mpich` as its dependency).
 - `fftw`
 
 License
