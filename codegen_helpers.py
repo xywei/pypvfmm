@@ -58,11 +58,11 @@ class CXXHeaders():
 class TemplateClassInst():
     """Instantiation of a C++ template class.
     """
-    inst_template = Template("template class ${class_id}<${template_args}>()")
+    inst_template = Template("template class ${class_id}<${template_args}>")
 
     def __init__(self, class_id, template_args):
         self.class_id = class_id
-        self.template_args= template_args
+        self.template_args = template_args
 
     def __str__(self):
         return self.inst_template.render(

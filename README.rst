@@ -12,6 +12,11 @@ Conda
 To use `pypvfmm` inside a `conda` environment, install the following dependencies
 from `conda-forge`:
 
+- `c-compiler`, `cxx-compiler`, `fortran-compiler`, and `libcxx`.
+- `xorg-libx11`
+- `mako`
+- `numpy` (which also installs `BLAS` as its dependency).
+- `pybind11`
 - `openmp`
 - `mpi4py`
 - `fftw`
