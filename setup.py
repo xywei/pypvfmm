@@ -244,7 +244,7 @@ def get_mpi_configs(mpich_compatible=True):
 # {{{ setup pybind11 include
 
 
-class get_pybind_include(object):
+class GetPybindInclude():
     """Helper class to determine the pybind11 include path
 
     The purpose of this class is to postpone importing pybind11
@@ -382,8 +382,8 @@ EXT_MODULES = [
         sources=['src/pypvfmm.cpp'],
         include_dirs=[
             # Path to pybind11 headers
-            get_pybind_include(),
-            get_pybind_include(user=True),
+            GetPybindInclude(),
+            GetPybindInclude(user=True),
             *get_pvfmm_configs(include_dir_only=True),
         ],
     ),
