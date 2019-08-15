@@ -23,19 +23,20 @@ from codegen_helpers import TemplateClassInst, CXXClass
 
 PVFMM_HEADERS = ["pvfmm.hpp", ]
 PYBIND11_HEADERS = ["pybind11/pybind11.h", "pybind11/numpy.h"]
-
 PVFMM_SUBMODULES = ["precomp_mat", ]
 
-# Try out on one class
+# {{{ mod: precomp_mat
+
 class_precomp_mat_pre = TemplateClassInst("PrecompMat", ["double", ])
 class_precomp_mat = CXXClass(class_precomp_mat_pre.get_class_id(),
                              class_precomp_mat_pre.tplt_class_id + 'D',
-                             in_module="precomp_mat")
+                             in_module="m_precomp_mat")
 class_precomp_mat.add_member_func(is_constructor=True,
                                   docstring="Constructor.",
                                   arg_names=["scale_invar"],
                                   arg_types=["bool"],
-                                  arg_default_vals={"scale_invar": True}
                                   )
 
-print(class_precomp_mat)
+# }}} End mod: precomp_mat
+
+PVFMM_CLASSES = [class_precomp_mat, ]

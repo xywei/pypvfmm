@@ -346,6 +346,7 @@ def generate_wrappers():
     """
     from mako.template import Template
     from codegen_configs import PVFMM_HEADERS, PYBIND11_HEADERS
+    from codegen_configs import PVFMM_SUBMODULES, PVFMM_CLASSES
     from codegen_helpers import CXXHeaders, TemplateClassInst, to_cpp
 
     base_name = "pypvfmm"
@@ -365,6 +366,10 @@ def generate_wrappers():
         pvfmm_headers=pvfmm_headers,
         template_instantiations=to_cpp(insts),
         wrapper_doc=__doc__,
+        wrapper_submodules='\n  '.join([
+            '  auto m_%s = m.def_submodule("%s");' % (module, module)
+            for module in PVFMM_SUBMODULES]),
+        wrapper_classes='  ' + '\n  '.join([str(mclass) for mclass in PVFMM_CLASSES])
         )
     result = tmpl.render(**context)
 

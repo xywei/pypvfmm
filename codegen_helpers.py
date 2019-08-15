@@ -60,13 +60,14 @@ class TemplateClassInst():
 
     class_id_template = Template("${tplt_class_id}<${template_args}>")
 
-    def __init__(self, tplt_class_id, template_args):
+    def __init__(self, tplt_class_id, template_args, namespace_prefix='pvfmm::'):
         self.tplt_class_id = tplt_class_id
         self.template_args = template_args
+        self.namespace_prefix = namespace_prefix
 
     def __str__(self):
         return self.inst_template.render(
-            tplt_class_id=self.tplt_class_id,
+            tplt_class_id=self.namespace_prefix + self.tplt_class_id,
             template_args=', '.join(self.template_args),
             )
 
@@ -74,7 +75,7 @@ class TemplateClassInst():
         """Returns class id that can be used to construct CXXClass objects.
         """
         return self.class_id_template.render(
-            tplt_class_id=self.tplt_class_id,
+            tplt_class_id=self.namespace_prefix + self.tplt_class_id,
             template_args=', '.join(self.template_args),
             )
 
