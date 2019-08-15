@@ -347,7 +347,7 @@ def generate_wrappers():
     from mako.template import Template
     from codegen_configs import PVFMM_HEADERS, PYBIND11_HEADERS
     from codegen_configs import PVFMM_SUBMODULES, PVFMM_CLASSES
-    from codegen_helpers import CXXHeaders, TemplateClassInst, to_cpp
+    from codegen_helpers import CXXHeaders, to_cpp
 
     base_name = "pypvfmm"
     mako_name = base_name + ".mako"
