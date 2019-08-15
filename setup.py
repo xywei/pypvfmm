@@ -422,7 +422,8 @@ EXT_MODULES = [
 class CleanCommand(Command):
     """Custom clean command to tidy up the project root."""
     CLEAN_FILES = ['./build', './dist', './*.pyc', './*.tgz',
-                   './*.egg-info', './*-build', './tmp']
+                   './*.egg-info', './*-build', './tmp',
+                   './pypvfmm/__init__.py']
 
     user_options = []
 

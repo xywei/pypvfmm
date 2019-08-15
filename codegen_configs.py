@@ -24,7 +24,7 @@ from codegen_helpers import TemplateClassInst, CXXClass
 PVFMM_HEADERS = ["pvfmm.hpp", ]
 PYBIND11_HEADERS = ["pybind11/pybind11.h", "pybind11/numpy.h"]
 
-PVFMM_SUBMODULES = ["precomp_mat", "profile"]
+PVFMM_SUBMODULES = ["precomp_mat", ]
 
 # Try out on one class
 class_precomp_mat_pre = TemplateClassInst("PrecompMat", ["double", ])
