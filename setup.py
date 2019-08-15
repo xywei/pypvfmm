@@ -357,9 +357,7 @@ def generate_wrappers():
     pybind11_headers = CXXHeaders(PYBIND11_HEADERS)
     pvfmm_headers = CXXHeaders(PVFMM_HEADERS)
 
-    insts = [
-        str(TemplateClassInst("pvfmm::PrecompMat", ["double"])),
-        ]
+    insts = [str(mclass.class_instantiation) for mclass in PVFMM_CLASSES]
 
     context = dict(
         pybind11_headers=pybind11_headers,

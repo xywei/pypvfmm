@@ -160,20 +160,26 @@ class CXXClassMemberFunc(CXXClassMemberBase):
 
 class CXXClass():
     """C++ class.
-
-    class_id:      C++ class identifier (w/t template arguments),
-                   e.g. std::vector<double>.
-    class_name:    Python class name, e.g. StdVector.
-    class_members: information about members.
     """
     class_template = Template(
-        'pybind11::class_<${class_id}>(${mod_var}, "${class_name}")${members};')
+        'pybind11::class_<${class_id}>(${mod_var}, "${class_name}"${dynamic_flag})${members};')
 
-    def __init__(self, class_id, class_name,
-                 in_module='m', class_members=None):
-        self.class_id = class_id
+    def __init__(self, class_name, namespace_prefix="pvfmm::",
+                 in_module='m', class_members=None,
+                 template_args=None, type_str="UnknownType",
+                 is_dynamic=True):
         self.class_name = class_name
         self.in_module = in_module
+        self.is_dynamic = is_dynamic
+        self.type_str = type_str
+
+        if template_args is None:
+            self.template_args = []
+        else:
+            self.template_args = template_args
+
+        self.class_instantiation = TemplateClassInst(
+            self.class_name, self.template_args)
 
         if class_members is None:
             self.class_members = []
@@ -189,14 +195,23 @@ class CXXClass():
         self.class_members.append(CXXClassMemberFunc(*args, **kwargs))
 
     def __str__(self):
+
+        if self.is_dynamic:
+            dynamic_flag = ', pybind11::dynamic_attr()'
+        else:
+            dynamic_flag = ''
+
         context = {
-            "class_id": self.class_id,
-            "class_name": self.class_name,
+            "class_id": self.class_instantiation.get_class_id(),
+            "class_name": self.class_name + self.type_str,
+            "dynamic_flag": dynamic_flag,
             "mod_var": self.in_module,
             "members": '\n    ' + '\n    '.join(
-                [Template(str(member)).render(class_id=self.class_id)
+                [Template(str(member)).render(
+                    class_id=self.class_instantiation.get_class_id())
                  for member in self.class_members]),
             }
+
         return self.class_template.render(**context)
 
 

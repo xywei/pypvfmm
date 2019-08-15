@@ -27,10 +27,11 @@ PVFMM_SUBMODULES = ["precomp_mat", ]
 
 # {{{ mod: precomp_mat
 
-class_precomp_mat_pre = TemplateClassInst("PrecompMat", ["double", ])
-class_precomp_mat = CXXClass(class_precomp_mat_pre.get_class_id(),
-                             class_precomp_mat_pre.tplt_class_id + 'D',
+class_precomp_mat = CXXClass(class_name="PrecompMat",
+                             template_args=["double", ],
+                             type_str="D",
                              in_module="m_precomp_mat")
+
 class_precomp_mat.add_member_func(is_constructor=True,
                                   docstring="Constructor.",
                                   arg_names=["scale_invar"],
