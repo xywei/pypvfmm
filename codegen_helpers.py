@@ -162,7 +162,7 @@ class CXXClass():
     """C++ class.
     """
     class_template = Template(
-        'pybind11::class_<${class_id}>(${mod_var}, "${class_name}"${dynamic_flag})${members};')
+        'pybind11::class_<${class_id}>(${mod_var}, "${class_name}"${dynamic_flag})${members};')  # noqa: E501
 
     def __init__(self, class_name, namespace_prefix="pvfmm::",
                  in_module='m', class_members=None,
