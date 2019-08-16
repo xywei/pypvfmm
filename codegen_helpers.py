@@ -51,6 +51,97 @@ class CXXHeaders():
             for hfile in self.header_files])
 
 
+class CXXFunction():
+    """C++ function.
+    """
+    func_template = Template(
+        '${mod_var}.def("${function_name}${type_str}", '
+        '&${namespace_prefix}${function_name}${template_args}'
+        '${docstring}${kwargs}${return_policy});')
+
+    def __init__(self, function_name, namespace_prefix="pvfmm::",
+                 in_module='m', return_policy=None,
+                 docstring=None,
+                 template_args=None, type_str="_unknown",
+                 arg_names=None, arg_default_vals=None,):
+        self.function_name = function_name
+        self.namespace_prefix = namespace_prefix
+
+        if in_module == 'm':
+            self.in_module = in_module
+        else:
+            self.in_module = 'mod_' + in_module
+
+        if return_policy:
+            assert return_policy in [
+                'take_ownership', 'copy', 'move', 'reference',
+                'reference_internal', 'automatic', 'automatic_reference']
+            self.return_policy = (', pybind11::return_value_policy::'
+                                  + return_policy)
+        else:
+            self.return_policy = ''
+
+        if template_args is None:
+            self.template_args = []
+        else:
+            self.template_args = template_args
+
+        if docstring is None:
+            self.docstring = ''
+        else:
+            self.docstring = ', "%s"' % docstring
+
+        if len(self.template_args) > 0:
+            self.type_str = type_str
+        else:
+            self.type_str = ""
+
+        if arg_names is None:
+            self.arg_names = []
+        else:
+            self.arg_names = arg_names
+
+        if arg_default_vals is None:
+            self.arg_default_vals = dict()
+        else:
+            self.arg_default_vals = arg_default_vals
+
+    def generate_template_args_code(self):
+        """Example output: <cdouble>
+        """
+        if len(self.template_args) < 1:
+            return ''
+        args_code = ', '.join(self.template_args)
+        return '<%s>' % args_code
+
+    def generate_kwargs_code(self):
+        """Example output: pybind11::arg("n") = 3
+        """
+        if len(self.arg_names) < 1:
+            return ''
+        code_segs = []
+        for arg in self.arg_names:
+            seg = 'pybind11::arg("%s")' % arg
+            if arg in self.arg_default_vals:
+                seg = seg + (' = %s' % self.arg_default_vals[arg])
+            code_segs.append(seg)
+        return ', ' + ', '.join(code_segs)
+
+    def __str__(self):
+        context = {
+            "mod_var": self.in_module,
+            "namespace_prefix": self.namespace_prefix,
+            "function_name": self.function_name,
+            "template_args": self.generate_template_args_code(),
+            "type_str": self.type_str,
+            "docstring": self.docstring,
+            "kwargs": self.generate_kwargs_code(),
+            "return_policy": self.return_policy,
+            }
+
+        return self.func_template.render(**context)
+
+
 class TemplateClassInst():
     """Instantiation of a C++ template class.
 
@@ -166,12 +257,16 @@ class CXXClass():
 
     def __init__(self, class_name, namespace_prefix="pvfmm::",
                  in_module='m', class_members=None,
-                 template_args=None, type_str="UnknownType",
+                 template_args=None, type_str="Unknown",
                  is_dynamic=True):
         self.class_name = class_name
-        self.in_module = in_module
         self.is_dynamic = is_dynamic
         self.type_str = type_str
+
+        if in_module == 'm':
+            self.in_module = in_module
+        else:
+            self.in_module = 'mod_' + in_module
 
         if template_args is None:
             self.template_args = []

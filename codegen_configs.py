@@ -19,18 +19,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
-from codegen_helpers import TemplateClassInst, CXXClass
+from codegen_helpers import CXXClass, CXXFunction
 
 PVFMM_HEADERS = ["pvfmm.hpp", ]
 PYBIND11_HEADERS = ["pybind11/pybind11.h", "pybind11/numpy.h"]
-PVFMM_SUBMODULES = ["precomp_mat", ]
+PVFMM_SUBMODULES = ["precomp_mat", "cheb_utils"]
+
+PVFMM_CLASSES = []
+PVFMM_FUNCTIONS = []
+
+
+def register_class(cxxclass):
+    global PVFMM_CLASSES
+    PVFMM_CLASSES.append(cxxclass)
+
+
+def register_function(cxxfunc):
+    global PVFMM_FUNCTIONS
+    PVFMM_FUNCTIONS.append(cxxfunc)
+
 
 # {{{ mod: precomp_mat
 
 class_precomp_mat = CXXClass(class_name="PrecompMat",
                              template_args=["double", ],
                              type_str="D",
-                             in_module="m_precomp_mat")
+                             in_module="precomp_mat")
 
 class_precomp_mat.add_member_func(is_constructor=True,
                                   docstring="Constructor.",
@@ -38,6 +52,32 @@ class_precomp_mat.add_member_func(is_constructor=True,
                                   arg_types=["bool"],
                                   )
 
+register_class(class_precomp_mat)
+
 # }}} End mod: precomp_mat
 
-PVFMM_CLASSES = [class_precomp_mat, ]
+# {{{ mod: cheb_utils
+
+cheb_poly_doc = '\\n'.join([
+    "Returns the values of all chebyshev polynomials up to degree d,",
+    "evaluated at points in the input vector. Output format:",
+    "{ T0[in[0]], ..., T0[in[n-1]], T1[in[0]], ..., T(d-1)[in[n-1]] }",
+    ])
+
+
+def wrap_cheb_poly(number_type):
+    func_cheb_poly = CXXFunction(function_name='cheb_poly',
+                                 in_module='cheb_utils',
+                                 namespace_prefix='pypvfmm::',
+                                 docstring=cheb_poly_doc,
+                                 template_args=["%s" % number_type, ],
+                                 type_str='_%s' % number_type,
+                                 arg_names=['d', 'in', 'n', 'out'],
+                                 )
+    register_function(func_cheb_poly)
+
+
+wrap_cheb_poly('double')
+wrap_cheb_poly('float')
+
+# }}} End mod: cheb_utils

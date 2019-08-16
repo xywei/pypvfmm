@@ -341,12 +341,36 @@ class BuildExt(build_ext):
 
 # {{{ wrapper generation
 
+def cxx_comment_remover(text):
+    def replacer(match):
+        sexp = match.group(0)
+        if sexp.startswith('/'):
+            return " "  # a space and not an empty string
+        return sexp
+    pattern = re.compile(
+        r'//.*?$|/\*.*?\*/|\'(?:\\.|[^\\\'])*\'|"(?:\\.|[^\\"])*"',
+        re.DOTALL | re.MULTILINE
+    )
+    return re.sub(pattern, replacer, text)
+
+
+def parse_numpy_wrapper_module(module_name):
+    raw = open(os.path.join(
+        'src', 'numpy_wrappers', '%s.cpp' % module_name),
+               'rt').read()
+    stripped = cxx_comment_remover(raw)
+    true_beg = 0
+    while stripped[true_beg] == '\n':
+        true_beg += 1
+    return stripped[true_beg:]
+
+
 def generate_wrappers():
     """Generates pypvfmm.cpp
     """
     from mako.template import Template
     from codegen_configs import PVFMM_HEADERS, PYBIND11_HEADERS
-    from codegen_configs import PVFMM_SUBMODULES, PVFMM_CLASSES
+    from codegen_configs import PVFMM_SUBMODULES, PVFMM_CLASSES, PVFMM_FUNCTIONS
     from codegen_helpers import CXXHeaders, to_cpp
 
     base_name = "pypvfmm"
@@ -357,17 +381,23 @@ def generate_wrappers():
     pybind11_headers = CXXHeaders(PYBIND11_HEADERS)
     pvfmm_headers = CXXHeaders(PVFMM_HEADERS)
 
+    numpy_wrappers = parse_numpy_wrapper_module('cheb_utils')
+
     insts = [str(mclass.class_instantiation) for mclass in PVFMM_CLASSES]
 
     context = dict(
         pybind11_headers=pybind11_headers,
         pvfmm_headers=pvfmm_headers,
         template_instantiations=to_cpp(insts),
+        numpy_wrappers=numpy_wrappers,
         wrapper_doc=__doc__,
-        wrapper_submodules='\n  '.join([
-            '  auto m_%s = m.def_submodule("%s");' % (module, module)
+        wrapper_submodules='  ' + '\n  '.join([
+            'auto mod_%s = m.def_submodule("%s");' % (module, module)
             for module in PVFMM_SUBMODULES]),
-        wrapper_classes='  ' + '\n  '.join([str(mclass) for mclass in PVFMM_CLASSES])
+        wrapper_classes='  ' + '\n  '.join(
+            [str(mclass) for mclass in PVFMM_CLASSES]),
+        wrapper_functions='  ' + '\n  '.join(
+            [str(mfunc) for mfunc in PVFMM_FUNCTIONS]),
         )
     result = tmpl.render(**context)
 
@@ -408,11 +438,12 @@ EXT_MODULES = [
     Extension(
         'pypvfmm.wrapper',
         language='c++',
-        sources=['src/pypvfmm.cpp'],
+        sources=['src/pypvfmm.cpp', ],
         include_dirs=[
             # Path to pybind11 headers
             GetPybindInclude(),
             GetPybindInclude(user=True),
+            # Path to pvfmm headers
             *get_pvfmm_configs(include_dir_only=True),
         ],
     ),

@@ -5,6 +5,8 @@
 ${pvfmm_headers}
 ${pybind11_headers}
 
+${numpy_wrappers}
+
 ${template_instantiations}
 
 PYBIND11_MODULE(wrapper, m) {
@@ -16,6 +18,9 @@ ${wrapper_submodules}
 
   // class wrappers
 ${wrapper_classes}
+
+  // function wrappers
+${wrapper_functions}
 
 }
 
