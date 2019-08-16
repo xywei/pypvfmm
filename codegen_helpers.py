@@ -76,8 +76,8 @@ class CXXFunction():
             assert return_policy in [
                 'take_ownership', 'copy', 'move', 'reference',
                 'reference_internal', 'automatic', 'automatic_reference']
-            self.return_policy = (', pybind11::return_value_policy::'
-                                  + return_policy)
+            self.return_policy = (
+                ', pybind11::return_value_policy::' + return_policy)
         else:
             self.return_policy = ''
 
