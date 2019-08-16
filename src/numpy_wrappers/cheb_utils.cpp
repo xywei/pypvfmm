@@ -31,11 +31,11 @@ namespace pypvfmm{
         int n,
         pybind11::array_t<T, pybind11::array::c_style> out){
       // check input dimensions
-      if ( in.ndim()     != 1 )
-        throw std::runtime_error("in should be 2-D NumPy array");
+      if ( in.ndim() != 1 )
+        throw std::runtime_error("in should be 1-D NumPy array");
 
-      if ( out.ndim()     != 1 )
-        throw std::runtime_error("out should be 2-D NumPy array");
+      if ( out.ndim() != 1 )
+        throw std::runtime_error("out should be 1-D NumPy array");
 
       auto inbuf = in.request();
       auto outbuf = out.request();
