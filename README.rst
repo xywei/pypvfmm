@@ -21,6 +21,11 @@ from `conda-forge`:
 - `mpi4py` (which also installs `mpich` as its dependency).
 - `fftw`
 
+.. code-block:: sh
+
+  conda install -c conda-forge c-compiler cxx-compiler fortran-compiler libcxx xorg-libx11 mako numpy pybind11 openmp mpi4py fftw
+  conda install -c conda-forge pytest pudb
+
 License
 -------
 
