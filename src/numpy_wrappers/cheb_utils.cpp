@@ -22,6 +22,7 @@
 **
 ** -------------------------------------------------------------------*/
 
+
 namespace pypvfmm{
 
   template <class T>
@@ -46,5 +47,32 @@ namespace pypvfmm{
       pvfmm::cheb_poly<T>(d, in_ptr, n, out_ptr);
       return pybind11::none();
     }
+
+
+  template <class T>
+    pybind11::array integ(
+        int m,
+        pybind11::array_t<T, pybind11::array::c_style> s,
+        T r, int n, const std::string &kernel_desc){
+
+      auto kernel = get_kernel<T>(kernel_desc);
+
+      auto sbuf = s.request();
+      T* s_ptr = (T*) sbuf.ptr;
+
+      std::vector<T> U = pvfmm::integ<T>(m, s_ptr, r, n, kernel);
+
+      constexpr int Udim = 1;
+      const std::array<size_t, Udim> Ushape = {U.size()};
+      const std::array<size_t, Udim> Ustrides = {sizeof(T)};
+      
+      return pybind11::array(
+          pybind11::buffer_info(U.data(),
+            sizeof(T), pybind11::format_descriptor<T>::value,
+            Udim, Ushape, Ustrides)
+          );
+    }
+
+
 
 } // end of namespace pypvfmm

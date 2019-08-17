@@ -381,7 +381,9 @@ def generate_wrappers():
     pybind11_headers = CXXHeaders(PYBIND11_HEADERS)
     pvfmm_headers = CXXHeaders(PVFMM_HEADERS)
 
-    numpy_wrappers = parse_numpy_wrapper_module('cheb_utils')
+    from codegen_configs import PVFMM_NUMPY_WRAPPERS
+    numpy_wrappers = '\n'.join([
+        parse_numpy_wrapper_module(wrapper) for wrapper in PVFMM_NUMPY_WRAPPERS])
 
     insts = [str(mclass.class_instantiation) for mclass in PVFMM_CLASSES]
 

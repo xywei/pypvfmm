@@ -21,7 +21,7 @@ THE SOFTWARE.
 """
 
 import numpy as np
-from pypvfmm import cheb_utils
+from pypvfmm import cheb_utils, kernel
 
 
 def test_cheb_poly_double():
@@ -38,3 +38,23 @@ def test_cheb_poly_single():
     pts = np.linspace(0, 1, npts, dtype=np.float32)
     out = np.zeros((deg + 1) * npts, dtype=np.float32)
     cheb_utils.cheb_poly_float(deg, pts, npts, out)
+
+
+def test_integ_single():
+    deg = 3
+    npts = 20
+    spoint = np.array([0, 0, 0], dtype=np.float32)
+    sbox_r = 1.5
+    lap_ker = kernel.LaplaceKernel().potential()
+    uu = cheb_utils.integ_float(deg, spoint, sbox_r, npts, lap_ker)
+    assert uu.dtype == np.float32
+
+
+def test_integ_double():
+    deg = 3
+    npts = 20
+    spoint = np.array([0, 0, 0], dtype=np.float64)
+    sbox_r = 1.5
+    lap_ker = kernel.LaplaceKernel().potential()
+    uu = cheb_utils.integ_double(deg, spoint, sbox_r, npts, lap_ker)
+    assert uu.dtype == np.float64

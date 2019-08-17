@@ -1,6 +1,11 @@
 #include <mpi.h>
 #include <omp.h>
 #include <iostream>
+#include <any>
+#include <array>
+#include <vector>
+#include <string>
+#include <unordered_map>
 
 ${pvfmm_headers}
 ${pybind11_headers}

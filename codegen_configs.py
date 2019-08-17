@@ -23,7 +23,11 @@ from codegen_helpers import CXXClass, CXXFunction
 
 PVFMM_HEADERS = ["pvfmm.hpp", ]
 PYBIND11_HEADERS = ["pybind11/pybind11.h", "pybind11/numpy.h"]
-PVFMM_SUBMODULES = ["precomp_mat", "cheb_utils"]
+
+PVFMM_SUBMODULES = ["kernel", "precomp_mat", "cheb_utils"]
+
+# the list ordering matters
+PVFMM_NUMPY_WRAPPERS = ["kernel", "cheb_utils"]
 
 PVFMM_CLASSES = []
 PVFMM_FUNCTIONS = []
@@ -58,6 +62,7 @@ register_class(class_precomp_mat)
 
 # {{{ mod: cheb_utils
 
+# cheb_poly
 cheb_poly_doc = '\\n'.join([
     "Returns the values of all chebyshev polynomials up to degree d,",
     "evaluated at points in the input vector. Output format:",
@@ -79,5 +84,25 @@ def wrap_cheb_poly(number_type):
 
 wrap_cheb_poly('double')
 wrap_cheb_poly('float')
+
+
+# integ
+integ_doc = 'Compute integrals over pyramids in all directions.'
+
+
+def wrap_integ(number_type):
+    func_cheb_poly = CXXFunction(function_name='integ',
+                                 in_module='cheb_utils',
+                                 namespace_prefix='pypvfmm::',
+                                 docstring=integ_doc,
+                                 template_args=["%s" % number_type, ],
+                                 type_str='_%s' % number_type,
+                                 arg_names=['m', 's', 'r', 'n', 'kernel'],
+                                 )
+    register_function(func_cheb_poly)
+
+
+wrap_integ('double')
+wrap_integ('float')
 
 # }}} End mod: cheb_utils

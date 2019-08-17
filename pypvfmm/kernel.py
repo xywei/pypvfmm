@@ -55,7 +55,7 @@ def add_kernels(kernel_container):
     """Add kernel bindings.
     """
     def kernel(self, kernel_name):
-        return "%s, %s, %s" % (self.__class__.__name__, self.dtype_str, kernel_name)
+        return "%s, %s" % (self.__class__.__name__, kernel_name)
 
     for kernel_name in kernel_container.__kernels__:
         named_kernel = partialmethod(kernel, kernel_name=kernel_name)
