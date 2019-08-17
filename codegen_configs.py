@@ -87,7 +87,16 @@ wrap_cheb_poly('float')
 
 
 # integ
-integ_doc = 'Compute integrals over pyramids in all directions.'
+integ_doc = """Compute integrals over pyramids in all directions.
+
+:param m: int, Chebyshev degree
+:param s: numpy.array, singular (target) point
+:param r: float, box size
+:param n: int, degree of the quadrature rule
+:param kernel: str, kernel information, see :mod:`pypvfmm.kernel`
+
+:return: numpy.array, the computed integrals
+""".replace('\n', '\\n')
 
 
 def wrap_integ(number_type):
