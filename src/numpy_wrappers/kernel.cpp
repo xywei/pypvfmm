@@ -41,23 +41,25 @@ namespace pypvfmm{
   const std::unordered_map<std::string, KernelKind>
     kernel_map{
       {"LaplaceKernel, potential", KernelKind::LaplacePotential},
-      {"LaplaceKernel, gradient", KernelKind::LaplaceGradient},
+      {"LapKnl3D",                 KernelKind::LaplacePotential},
+      {"LaplaceKernel, gradient",  KernelKind::LaplaceGradient},
 
       {"StokesKernel, velocity", KernelKind::StokesVelocity},
       {"StokesKernel, pressure", KernelKind::StokesPressure},
-      {"StokesKernel, stress", KernelKind::StokesStress},
+      {"StokesKernel, stress",   KernelKind::StokesStress},
       {"StokesKernel, vel_grad", KernelKind::StokesVelGrad},
 
       {"BiotSavartKernel, potential", KernelKind::BiotSavartPotential},
 
       {"HelmholtzKernel, potential", KernelKind::HelmholtzPotential},
+      {"HelmKnl3D(k)",               KernelKind::HelmholtzPotential},
     };
 
   template <class T>
     const pvfmm::Kernel<T> get_kernel(const std::string &kernel_desc) {
       auto query = kernel_map.find(kernel_desc);
       if (query == kernel_map.end()) {
-        throw std::runtime_error("Invalid kernel_desc!");
+        throw std::runtime_error("Invalid kernel_desc: " + kernel_desc);
       }
       auto kind = query->second;
 

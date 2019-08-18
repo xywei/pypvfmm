@@ -45,7 +45,8 @@ def integ(m, s, r, n, kernel):
     :param s: numpy.array, singular (target) point
     :param r: float, box size
     :param n: int, degree of the quadrature rule
-    :param kernel: str, kernel information, see :mod:`pypvfmm.kernel`
+    :param kernel: str, kernel information, see :mod:`pypvfmm.kernel`,
+                   may also pass supported :mod:`sumpy` kernels.
 
     :return: numpy.array, the computed integrals
     """
@@ -53,6 +54,14 @@ def integ(m, s, r, n, kernel):
     assert len(s) == 3
 
     dtype = s.dtype
+
+    try:
+        from sumpy.kernel import Kernel
+        if isinstance(kernel, Kernel):
+            from pypvfmm.kernel import process_sumpy_kernel
+            kernel = process_sumpy_kernel(kernel)
+    except ImportError:
+        pass
 
     if dtype == np.float32:
         return integ_float(m, s, r, n, kernel)

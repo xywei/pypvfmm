@@ -62,6 +62,15 @@ def add_kernels(kernel_container):
         setattr(kernel_container, kernel_name, named_kernel)
 
 
+def process_sumpy_kernel(kernel):
+    """Parse sumpy kernels to feed to pvfmm.
+    """
+    if not kernel.dim == 3:
+        raise RuntimeError("PvFMM only supports 3D kernels.")
+
+    return str(kernel)
+
+
 add_kernels(LaplaceKernel)
 add_kernels(StokesKernel)
 add_kernels(BiotSavartKernel)
