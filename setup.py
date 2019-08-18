@@ -418,8 +418,14 @@ def generate_init_script():
     tmpl = Template(open(os.path.join('src', mako_name), "rt").read(),
                     uri=mako_name, strict_undefined=True)
 
-    imports = ["from pypvfmm.wrapper import %s\n" % submodule
-               for submodule in PVFMM_SUBMODULES]
+    imports = [
+            Template("""
+try:
+    from pypvfmm import ${submodule}
+except ImportError:
+    from pypvfmm.wrapper import ${submodule}""").render(
+                     submodule=submodule)
+            for submodule in PVFMM_SUBMODULES]
 
     context = dict(
         import_wrapper_submodules="".join(imports),

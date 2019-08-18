@@ -24,11 +24,6 @@ from pypvfmm.version import VERSION_TEXT as __version__  # noqa
 
 ${import_wrapper_submodules}
 
-# extend pvfmm's kernel module with some Python stuff
-import pypvfmm.kernel as kernel_salt
-kernel.__dict__.update(kernel_salt.__dict__)
-del kernel_salt
-
 __all__ = [
         "__version__",
         ${wrapper_submodules}
