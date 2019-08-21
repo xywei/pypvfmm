@@ -21,23 +21,40 @@ THE SOFTWARE.
 """
 
 import numpy as np
+from numpy.polynomial.chebyshev import chebval
 from pypvfmm import cheb_utils, kernel
 
 
 def test_cheb_poly_double():
-    deg = 3
+    deg = 21
     npts = 100
     pts = np.linspace(0, 1, npts, dtype=np.float64)
     out = np.zeros((deg + 1) * npts, dtype=np.float64)
     cheb_utils.cheb_poly_double(deg, pts, npts, out)
 
+    out = out.reshape([deg + 1, npts])
+    cheb_coefs = np.zeros(deg + 1)
+    for m in range(deg + 1):
+        cheb_coefs.fill(0)
+        cheb_coefs[m] = 1
+        cheb_vals_np = chebval(pts, cheb_coefs)
+        assert np.allclose(out[m], cheb_vals_np)
+
 
 def test_cheb_poly_single():
-    deg = 3
+    deg = 21
     npts = 100
     pts = np.linspace(0, 1, npts, dtype=np.float32)
     out = np.zeros((deg + 1) * npts, dtype=np.float32)
     cheb_utils.cheb_poly_float(deg, pts, npts, out)
+
+    out = out.reshape([deg + 1, npts])
+    cheb_coefs = np.zeros(deg + 1)
+    for m in range(deg + 1):
+        cheb_coefs.fill(0)
+        cheb_coefs[m] = 1
+        cheb_vals_np = chebval(pts, cheb_coefs)
+        assert np.allclose(out[m], cheb_vals_np, rtol=1e-6, atol=1e-6)
 
 
 def test_integ_single():
