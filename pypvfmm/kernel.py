@@ -66,7 +66,14 @@ def process_sumpy_kernel(kernel):
     """Parse sumpy kernels to feed to pvfmm.
     """
     if not kernel.dim == 3:
-        raise RuntimeError("PvFMM only supports 3D kernels.")
+        raise ValueError("PvFMM only supports 3D kernels.")
+
+    from sumpy.kernel import DerivativeBase, LaplaceKernel
+    if isinstance(kernel, DerivativeBase):
+        if isinstance(kernel.inner_kernel, LaplaceKernel):
+            raise ValueError("PvFMM does not support computing derivatives of %s."
+                             % str(kernel.inner_kernel))
+        return str(kernel.inner_kernel) + ', gradient'
 
     return str(kernel)
 
