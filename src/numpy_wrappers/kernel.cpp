@@ -43,6 +43,7 @@ namespace pypvfmm{
       {"LaplaceKernel, potential", KernelKind::LaplacePotential},
       {"LapKnl3D",                 KernelKind::LaplacePotential},
       {"LaplaceKernel, gradient",  KernelKind::LaplaceGradient},
+      {"LapKnl3D, gradient",       KernelKind::LaplaceGradient},
 
       {"StokesKernel, velocity", KernelKind::StokesVelocity},
       {"StokesKernel, pressure", KernelKind::StokesPressure},
