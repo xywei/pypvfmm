@@ -4,7 +4,15 @@ pypvfmm: A Python Wrapper of PVFMM
 .. image:: https://gitlab.tiker.net/xywei/pypvfmm/badges/master/pipeline.svg
    :target: https://gitlab.tiker.net/xywei/pypvfmm/commits/master
 
-pypvfmm is a **WIP** Python interface to pvfmm. 
+pypvfmm is a **WIP** (not-yet-functional) Python interface to pvfmm. 
+
+Current Status
+--------------
+
+The wrapper was initially developed to support precomputation tests in `volumential`.
+At the moment, only the table builder is wrapped. Additional functionalities will
+be added as needed. The existing build system and `setuptools` integration
+allows for relatively easy addition of new functionalities.
 
 Conda
 -----
