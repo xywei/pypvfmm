@@ -1,3 +1,5 @@
+from __future__ import division, absolute_import, print_function
+
 __copyright__ = "Copyright (C) 2019 Xiaoyu Wei"
 
 __license__ = """
@@ -20,8 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-from functools import partialmethod
 import numpy as np
+
+try:
+    from functools import partialmethod
+except ImportError:
+    # py2
+    from functools import partial
+
+    class partialmethod(partial):  # noqa
+        def __get__(self, instance, owner):
+            if instance is None:
+                return self
+            return partial(self.func, instance,
+                           *(self.args or ()), **(self.keywords or {}))
 
 
 class KernelBase():

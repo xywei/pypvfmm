@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division, absolute_import, print_function
 
 """A Python wrapper for PvFMM."""
 
@@ -28,11 +29,16 @@ import subprocess
 import os
 import sys
 import re
-from itertools import filterfalse
 from setuptools import setup, Extension, Command
 from setuptools.command.build_ext import build_ext
 from setuptools.command.build_py import build_py
 import setuptools
+
+try:
+    from itertools import filterfalse
+except ImportError:
+    # py2
+    from itertools import ifilterfalse as filterfalse
 
 PYPVFMM_SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 EXTERNAL_PVFMM = os.environ.get("PVFMM_DIR", None)
@@ -184,7 +190,7 @@ def get_pvfmm_configs(include_dir_only=False):
     try:
         with open(os.path.join(PVFMM_DIR, "MakeVariables"), 'r') as mvfp:
             pvfmm_config = mvfp.read()
-    except FileNotFoundError:
+    except IOError:
         return []
 
     pvfmm_makevars = flatten_makevars(parse_makevars(pvfmm_config))
@@ -450,10 +456,8 @@ EXT_MODULES = [
         include_dirs=[
             # Path to pybind11 headers
             GetPybindInclude(),
-            GetPybindInclude(user=True),
-            # Path to pvfmm headers
-            *get_pvfmm_configs(include_dir_only=True),
-        ],
+            GetPybindInclude(user=True)
+            ] + list(get_pvfmm_configs(include_dir_only=True)),
     ),
 ]
 
@@ -513,7 +517,7 @@ class BuildPy(build_py):
         if USE_BUNDLED_PVFMM:
             build_pvfmm()
         if not os.path.isfile(os.path.join(PVFMM_DIR, "MakeVariables")):
-            raise FileNotFoundError("Cannot locate MakeVariables at %s. "
+            raise IOError("Cannot locate MakeVariables at %s. "
                                     "Please check whether PVFMM_DIR "
                                     "is set up correctly." % PVFMM_DIR)
         generate_init_script()
