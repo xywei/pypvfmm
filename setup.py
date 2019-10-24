@@ -192,7 +192,7 @@ def get_pvfmm_configs(include_dir_only=False):
         with open(os.path.join(PVFMM_DIR, "MakeVariables"), 'r') as mvfp:
             pvfmm_config = mvfp.read()
     except IOError:
-        return []
+        return ([], [], [])
 
     pvfmm_makevars = flatten_makevars(parse_makevars(pvfmm_config))
 
