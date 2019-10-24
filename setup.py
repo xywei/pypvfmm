@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 import subprocess
 import os
+import multiprocessing
 import sys
 import re
 from setuptools import setup, Extension, Command
@@ -108,7 +109,7 @@ def build_pvfmm():
                                "--prefix=%s/pvfmm-build" % PYPVFMM_SRC_DIR,
                                "--disable-doxygen-dot"], env=env_plus)
 
-    subprocess.check_call(["make", "-j%d" % os.cpu_count()])
+    subprocess.check_call(["make", "-j%d" % multiprocessing.cpu_count()])
     subprocess.check_call(["make", "install"])
 
     print("Leaving pvfmm/")
